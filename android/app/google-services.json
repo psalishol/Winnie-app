@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "690876759404",
+    "firebase_url": "https://winnie-app-a84fd-default-rtdb.firebaseio.com",
+    "project_id": "winnie-app-a84fd",
+    "storage_bucket": "winnie-app-a84fd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690876759404:android:2ef163fe512fc4108ac749",
+        "android_client_info": {
+          "package_name": "winnie.winnie_user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690876759404-un5hsedsuqi0qd6hb5lrvh42v64pftdc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "winnie.winnie_user",
+            "certificate_hash": "d91b7948f4a1b7544d79450bf0978949244bd20b"
+          }
+        },
+        {
+          "client_id": "690876759404-gap0g39jj7788k9meladqm0h5nkcndsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwIrL9iqrDuUVfTQ8sAn7op3kze45JxPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "690876759404-gap0g39jj7788k9meladqm0h5nkcndsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "690876759404-9sfvgsruvqjrcnt48qmj3ast23n6kk7i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "winnie.winnieUser"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
