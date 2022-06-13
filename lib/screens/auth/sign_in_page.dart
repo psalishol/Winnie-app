@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:winnie_user/screens/auth/signup_page.dart';
+import 'package:winnie_user/screens/home_screen/custom_home_screen.dart';
 
 import '/constants/constants.dart';
 
@@ -13,6 +15,7 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   bool obscureText = true;
+  bool processing = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -70,15 +73,7 @@ class _SignInPageState extends State<SignInPage> {
                   suffixColor: obscureText ? AppColors.grey : AppColors.blue),
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    print("valid");
-                  } else {
-                    print("not valid");
-                  }
-
-                  // print("b".getEmailValidation());
-                },
+                onTap: signInUser,
                 child: Container(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
@@ -93,13 +88,20 @@ class _SignInPageState extends State<SignInPage> {
                             blurRadius: 10)
                       ]),
                   child: Center(
-                      child: Text(
-                    "Sign In",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5!
-                        .copyWith(color: AppColors.white),
-                  )),
+                      child: processing
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.white,
+                              ))
+                          : Text(
+                              "Sign In",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(color: AppColors.white),
+                            )),
                 ),
               ),
               SizedBox(
@@ -150,6 +152,7 @@ class _SignInPageState extends State<SignInPage> {
                     const SizedBox(width: 5),
                     GestureDetector(
                         onTap: () {
+                          _formKey.currentState!.reset();
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const SignUpPage()));
                         },
@@ -170,6 +173,42 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  Future<void> signInUser() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        setState(() => processing = true);
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _emailController.value.text,
+            password: _passwordController.value.text);
+        _formKey.currentState!.reset();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const CustomHomeScreen()));
+      } on FirebaseAuthException catch (e) {
+        print(e);
+        setState(() => processing = false);
+        if (e.code == 'network-request-failed') {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Couldn't connect to the Internet"),
+                Icon(
+                  Icons.wifi_off,
+                  color: AppColors.white,
+                )
+              ],
+            ),
+          )));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Unexpected Error Occured")));
+        }
+      }
+    }
+  }
+
   Widget _buildTextField(
       {required TextEditingController controller,
       required String hint,
@@ -180,17 +219,10 @@ class _SignInPageState extends State<SignInPage> {
       bool? obscureText}) {
     return TextFormField(
       validator: (value) {
-        if (value!.isEmpty && !isPassword) {
-          return "Please enter your email";
-
-          // } else if (value.isNotEmpty &&
-          //     !isPassword &&
-          //     !value.getEmailValidation()) {
-          //   return "Invalid Email, Please Enter a valid email";
-        } else if (value.isEmpty && isPassword) {
-          return "Please enter your password";
-        } else if (value.isNotEmpty && isPassword && value.length < 7) {
-          return "Password must be more than 7 characters";
+        if (!isPassword && value!.isEmpty) {
+          return "Enter your email";
+        } else if (isPassword && value!.isEmpty) {
+          return "Enter your password";
         }
         return null;
       },
